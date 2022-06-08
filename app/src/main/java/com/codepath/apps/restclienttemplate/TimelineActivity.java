@@ -149,7 +149,9 @@ public class TimelineActivity extends AppCompatActivity {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
                 Log.i(TAG, "onSuccess" + json.toString());
-                JSONArray jsonArray = json.jsonArray;
+                // json array of tweets
+                JSONArray jsonArray = json.jsonArray; // each tweet is a jsonObject
+                System.out.println("json array: " + jsonArray);
                 try {
                     tweets.addAll(Tweet.fromJsonArray(jsonArray)); // returns the full list of tweets from the api call
                     // this is what triggers the functions in the adapter?

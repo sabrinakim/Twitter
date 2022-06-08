@@ -72,7 +72,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView ivProfileImage;
-        ImageView ivEmbedded;
+        ImageView ivTweetImage;
         TextView tvBody;
         TextView tvScreenName;
 
@@ -84,6 +84,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             ivProfileImage = itemView.findViewById(R.id.ivProfile);
             tvBody = itemView.findViewById(R.id.tvBody);
             tvScreenName = itemView.findViewById(R.id.tvScreenName);
+            ivTweetImage = itemView.findViewById(R.id.ivTweetImage);
         }
 
         // binding tweet to the tweet layout
@@ -91,6 +92,13 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvBody.setText(tweet.body);
             tvScreenName.setText(tweet.user.screenName);
             Glide.with(context).load(tweet.user.profileImageUrl).into(ivProfileImage);
+            System.out.println("url1234: " + tweet.tweetImageURL);
+            if (tweet.tweetImageURL != null) {
+                ivTweetImage.setVisibility(View.VISIBLE);
+                Glide.with(context).load(tweet.tweetImageURL).into(ivTweetImage);
+            } else {
+                ivTweetImage.setVisibility(View.GONE);
+            }
         }
     }
 }
