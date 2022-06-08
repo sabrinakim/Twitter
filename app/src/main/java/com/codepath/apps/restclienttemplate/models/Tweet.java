@@ -13,6 +13,7 @@ public class Tweet {
 
     public String body;
     public String createdAt;
+    public String imageURL;
     public User user;
 
     // empty constructor needed by Parceler library
@@ -24,6 +25,7 @@ public class Tweet {
         tweet.createdAt = jsonObject.getString("created_at");
         // fromJson takes a JSONObect and converts to a User object.
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
+
         return tweet;
     }
 

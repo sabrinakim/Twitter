@@ -1,6 +1,7 @@
 package com.codepath.apps.restclienttemplate;
 
 import android.content.Context;
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,11 +55,24 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         return tweets.size();
     }
 
+    public void clear() {
+        tweets.clear();
+        notifyDataSetChanged();;
+    }
+
+    public void addAll(List<Tweet> newTweets) {
+        tweets.addAll(newTweets);
+        notifyDataSetChanged();
+    }
+
+
+
 
     // define a viewholder class
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView ivProfileImage;
+        ImageView ivEmbedded;
         TextView tvBody;
         TextView tvScreenName;
 

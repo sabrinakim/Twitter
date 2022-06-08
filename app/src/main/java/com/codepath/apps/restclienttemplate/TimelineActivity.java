@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ public class TimelineActivity extends AppCompatActivity {
 
     public static final String TAG = "TimelineActivity";
     private final int REQUEST_CODE = 20;
+    private SwipeRefreshLayout swipeContainer;
 
     TwitterClient client;
     RecyclerView rvTweets;
@@ -72,6 +74,36 @@ public class TimelineActivity extends AppCompatActivity {
                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish(); // finish kills the timeline activity so that we can't go back to it
+            }
+        });
+
+        swipeContainer = findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchTimelineAsync();
+            }
+        });
+
+    }
+
+    public void fetchTimelineAsync() {
+        client.getHomeTimeline(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                adapter.clear(); // clears all the tweets
+                try {
+                    tweets.addAll(Tweet.fromJsonArray(json.jsonArray));
+                } catch (JSONException e) {
+                    Log.e(TAG, "Json exception", e);
+                }
+                adapter.addAll(tweets);
+                swipeContainer.setRefreshing(false); // signals that refresh is done
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                Log.d("DEBUG", "Fetch timeline error: " + response);
             }
         });
     }
