@@ -75,6 +75,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         ImageView ivTweetImage;
         TextView tvBody;
         TextView tvScreenName;
+        TextView tvTimestamp;
 
         // ViewHolder represents a tweet; one row in the recycling view
         // constructor
@@ -85,6 +86,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvBody = itemView.findViewById(R.id.tvBody);
             tvScreenName = itemView.findViewById(R.id.tvScreenName);
             ivTweetImage = itemView.findViewById(R.id.ivTweetImage);
+            tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
         }
 
         // binding tweet to the tweet layout
@@ -92,13 +94,15 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvBody.setText(tweet.body);
             tvScreenName.setText(tweet.user.screenName);
             Glide.with(context).load(tweet.user.profileImageUrl).into(ivProfileImage);
-            System.out.println("url1234: " + tweet.tweetImageURL);
+            //System.out.println("url1234: " + tweet.tweetImageURL);
             if (tweet.tweetImageURL != null) {
                 ivTweetImage.setVisibility(View.VISIBLE);
                 Glide.with(context).load(tweet.tweetImageURL).into(ivTweetImage);
             } else {
                 ivTweetImage.setVisibility(View.GONE);
             }
+            tvTimestamp.setText(tweet.relativeTimestamp);
+
         }
     }
 }
