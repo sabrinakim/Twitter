@@ -51,15 +51,17 @@
         app:layout_constraintTop_toBottomOf="@+id/tvTweetDetail"
         tools:srcCompat="@tools:sample/avatars" />
 
-    <ImageButton
-        android:id="@+id/ibLikeDetail"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+    <ToggleButton
+        android:id="@+id/tbLike"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/toggle_like_selector"
+        android:textOff=""
+        android:textOn=""
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivMediaDetail"
-        app:srcCompat="@drawable/ic_vector_heart_stroke"
-        tools:ignore="SpeakableTextPresentCheck" />
+        tools:ignore="TouchTargetSizeCheck" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

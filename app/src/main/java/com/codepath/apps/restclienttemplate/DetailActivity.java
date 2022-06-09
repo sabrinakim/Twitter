@@ -33,7 +33,7 @@ public class DetailActivity extends AppCompatActivity {
         ivMediaDetail = findViewById(R.id.ivMediaDetail);
         tvUsernameDetail = findViewById(R.id.tvUsernameDetail);
         tvTweetDetail = findViewById(R.id.tvTweetDetail);
-        ibLikeDetail = findViewById(R.id.ibLikeDetail);
+        //ibLikeDetail = findViewById(R.id.ibLikeDetail);
 
         Glide.with(this).load(tweet.user.profileImageUrl).into(ivProfileDetail);
         Glide.with(this).load(tweet.getTweetImageURL()).into(ivMediaDetail);
@@ -41,7 +41,6 @@ public class DetailActivity extends AppCompatActivity {
         tvUsernameDetail.setText(tweet.getUser().name);
         tvTweetDetail.setText(tweet.body);
 
-        // add click listener to button
-
+        // add click listener to button --> turn button red when clicked
     }
 }
