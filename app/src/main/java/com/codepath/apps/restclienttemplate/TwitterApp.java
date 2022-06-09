@@ -2,6 +2,7 @@ package com.codepath.apps.restclienttemplate;
 
 import android.app.Application;
 import android.content.Context;
+import android.widget.ToggleButton;
 
 import androidx.room.Room;
 

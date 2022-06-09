@@ -40,7 +40,5 @@ public class DetailActivity extends AppCompatActivity {
 
         tvUsernameDetail.setText(tweet.getUser().name);
         tvTweetDetail.setText(tweet.body);
-
-        // add click listener to button --> turn button red when clicked
     }
 }

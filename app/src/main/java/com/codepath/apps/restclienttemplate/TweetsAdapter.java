@@ -8,16 +8,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.apps.restclienttemplate.models.Tweet;
+import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
 import org.parceler.Parcels;
 
 import java.util.List;
+
+import okhttp3.Headers;
 
 // adapter fills layout with twitter data
 public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder> {
@@ -79,6 +83,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         TextView tvBody;
         TextView tvScreenName;
         TextView tvTimestamp;
+        ToggleButton tbLike;
 
         @Override
         public void onClick(View view) {
@@ -107,6 +112,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvScreenName = itemView.findViewById(R.id.tvScreenName);
             ivTweetImage = itemView.findViewById(R.id.ivTweetImage);
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
+            tbLike = itemView.findViewById(R.id.tbLike);
 
             itemView.setOnClickListener(this);
         }
@@ -124,6 +130,26 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                 ivTweetImage.setVisibility(View.GONE);
             }
             tvTimestamp.setText(tweet.relativeTimestamp);
+
+            tbLike.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // send api request
+                    TwitterClient client = new TwitterClient(context);
+                    client.likeTweet(tweet, new JsonHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Headers headers, JSON json) {
+                            System.out.println("tweet successfully liked");
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                            System.out.println("tweet did not liked :(((");
+                        }
+                    });
+
+                }
+            });
 
         }
     }

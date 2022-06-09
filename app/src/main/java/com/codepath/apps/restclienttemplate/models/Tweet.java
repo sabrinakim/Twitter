@@ -22,6 +22,8 @@ public class Tweet {
     public User user;
     public String tweetImageURL;
     public String relativeTimestamp;
+    public long id;
+    public String idString;
 
     static final String TWITTERFORMAT = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
 
@@ -31,6 +33,7 @@ public class Tweet {
     // parsing each tweet represented by a jsonObject
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
         Tweet tweet = new Tweet();
+        System.out.println("json object: " + jsonObject);
 
         if (jsonObject.has("full_text")) {
             tweet.body = jsonObject.getString("full_text");
@@ -41,7 +44,8 @@ public class Tweet {
 
         // fromJson takes a JSONObect and converts to a User object.
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
-
+        tweet.id = jsonObject.getInt("id");
+        tweet.idString = jsonObject.getString("id_str");
 
         // each tweet has "entities" section
         JSONObject entities = jsonObject.getJSONObject("entities");
@@ -98,5 +102,9 @@ public class Tweet {
 
     public User getUser() {
         return user;
+    }
+
+    public long getId() {
+        return id;
     }
 }
