@@ -117,7 +117,6 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvBody.setText(tweet.body);
             tvScreenName.setText(tweet.user.screenName);
             Glide.with(context).load(tweet.user.profileImageUrl).into(ivProfileImage);
-            //System.out.println("url1234: " + tweet.tweetImageURL);
             if (tweet.tweetImageURL != null) {
                 ivTweetImage.setVisibility(View.VISIBLE);
                 Glide.with(context).load(tweet.tweetImageURL).into(ivTweetImage);

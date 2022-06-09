@@ -23,6 +23,8 @@ public class Tweet {
     public String tweetImageURL;
     public String relativeTimestamp;
 
+    static final String TWITTERFORMAT = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+
     // empty constructor needed by Parceler library
     public Tweet() {}
 
@@ -52,7 +54,6 @@ public class Tweet {
         }
 
         tweet.relativeTimestamp = tweet.getRelativeTimeAgo(tweet.createdAt);
-        System.out.println("relative time: " + tweet.relativeTimestamp);
 
         return tweet;
     }
@@ -67,8 +68,8 @@ public class Tweet {
 
     // getRelativeTimeAgo("Mon Apr 01 21:16:23 +0000 2014");
     public String getRelativeTimeAgo(String rawJsonDate) {
-        String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
-        SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
+        //String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+        SimpleDateFormat sf = new SimpleDateFormat(TWITTERFORMAT, Locale.ENGLISH);
         sf.setLenient(true);
 
         String relativeDate = "";
