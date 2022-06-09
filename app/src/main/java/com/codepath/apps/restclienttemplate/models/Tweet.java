@@ -18,7 +18,7 @@ public class Tweet {
 
     public String body;
     public String createdAt;
-    public String imageURL;
+    //public String imageURL;
     public User user;
     public String tweetImageURL;
     public String relativeTimestamp;
@@ -81,5 +81,21 @@ public class Tweet {
         }
 
         return relativeDate;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public String getImageURL() {
+        return tweetImageURL;
+    }
+
+    public String getTweetImageURL() {
+        return tweetImageURL;
+    }
+
+    public User getUser() {
+        return user;
     }
 }
