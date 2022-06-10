@@ -147,6 +147,19 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                         SharedPreferences.Editor editor = context.getSharedPreferences("save" + tweet.idString, Context.MODE_PRIVATE).edit();
                         editor.putBoolean("toggleOn" + tweet.idString, true); // saving new preference state
                         editor.apply();
+
+                        TwitterClient client = new TwitterClient(context);
+                        client.likeTweet(tweet, new JsonHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                                System.out.println("tweet successfully liked");
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                                System.out.println("tweet did not liked :(((");
+                            }
+                        });
                         //tbLike.setChecked(true);
 
                     } else {

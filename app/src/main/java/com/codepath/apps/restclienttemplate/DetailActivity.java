@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.bumptech.glide.Glide;
 import com.codepath.apps.restclienttemplate.models.Tweet;
@@ -19,7 +20,7 @@ public class DetailActivity extends AppCompatActivity {
     ImageView ivMediaDetail;
     TextView tvUsernameDetail;
     TextView tvTweetDetail;
-    ImageButton ibLikeDetail;
+    ToggleButton tbLike;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,5 +41,7 @@ public class DetailActivity extends AppCompatActivity {
 
         tvUsernameDetail.setText(tweet.getUser().name);
         tvTweetDetail.setText(tweet.body);
+
+
     }
 }
