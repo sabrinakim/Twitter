@@ -85,6 +85,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         TextView tvBody;
         TextView tvScreenName;
         TextView tvTimestamp;
+        TextView actualName;
         ToggleButton tbLike;
 
         @Override
@@ -115,6 +116,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             ivTweetImage = itemView.findViewById(R.id.ivTweetImage);
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
             tbLike = itemView.findViewById(R.id.tbLike);
+            actualName = itemView.findViewById(R.id.tvActualName);
 
             itemView.setOnClickListener(this);
         }
@@ -123,7 +125,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         // binding tweet to the tweet layout
         public void bind(Tweet tweet) {
             tvBody.setText(tweet.body);
-            tvScreenName.setText(tweet.user.screenName);
+            tvScreenName.setText(tweet.getUser().name);
             Glide.with(context).load(tweet.user.profileImageUrl).into(ivProfileImage);
             if (tweet.tweetImageURL != null) {
                 ivTweetImage.setVisibility(View.VISIBLE);
@@ -132,6 +134,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                 ivTweetImage.setVisibility(View.GONE);
             }
             tvTimestamp.setText(tweet.relativeTimestamp);
+            actualName.setText("@" + tweet.getUser().screenName);
 
             SharedPreferences sharedPreferences = context.getSharedPreferences("save" + tweet.idString, Context.MODE_PRIVATE); // key value pair.
             // if there is no key "value", switch will be off (default activity)
