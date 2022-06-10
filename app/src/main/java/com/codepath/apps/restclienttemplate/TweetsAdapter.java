@@ -2,10 +2,12 @@ package com.codepath.apps.restclienttemplate;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -131,23 +133,30 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             }
             tvTimestamp.setText(tweet.relativeTimestamp);
 
-            tbLike.setOnClickListener(new View.OnClickListener() {
+            SharedPreferences sharedPreferences = context.getSharedPreferences("save" + tweet.idString, Context.MODE_PRIVATE); // key value pair.
+            // if there is no key "value", switch will be off (default activity)
+            tbLike.setChecked(sharedPreferences.getBoolean("toggleOn" + tweet.idString, false));
+
+            tbLike.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
-                public void onClick(View view) {
-                    // send api request
-                    TwitterClient client = new TwitterClient(context);
-                    client.likeTweet(tweet, new JsonHttpResponseHandler() {
-                        @Override
-                        public void onSuccess(int statusCode, Headers headers, JSON json) {
-                            System.out.println("tweet successfully liked");
-                        }
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if (b) {
+                        // The toggle is enabled
+                        //System.out.println("IN HERE1");
+                        // getting editor so that we can change the shared preference state.
+                        SharedPreferences.Editor editor = context.getSharedPreferences("save" + tweet.idString, Context.MODE_PRIVATE).edit();
+                        editor.putBoolean("toggleOn" + tweet.idString, true); // saving new preference state
+                        editor.apply();
+                        //tbLike.setChecked(true);
 
-                        @Override
-                        public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                            System.out.println("tweet did not liked :(((");
-                        }
-                    });
-
+                    } else {
+                        // The toggle is disabled
+                        SharedPreferences.Editor editor = context.getSharedPreferences("save" + tweet.idString, Context.MODE_PRIVATE).edit();
+                        //System.out.println("IN HERE2");
+                        editor.putBoolean("toggleOn" + tweet.idString, false);
+                        editor.apply();
+//                        tbLike.setChecked(true);
+                    }
                 }
             });
 

@@ -1,5 +1,6 @@
 package com.codepath.apps.restclienttemplate.models;
 
+import android.content.SharedPreferences;
 import android.text.format.DateUtils;
 
 import org.json.JSONArray;
@@ -25,7 +26,10 @@ public class Tweet {
     public long id;
     public String idString;
 
+
     static final String TWITTERFORMAT = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+
+   // SharedPreferences shared = this.getSharedPreferences()
 
     // empty constructor needed by Parceler library
     public Tweet() {}
@@ -33,7 +37,7 @@ public class Tweet {
     // parsing each tweet represented by a jsonObject
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
         Tweet tweet = new Tweet();
-        System.out.println("json object: " + jsonObject);
+        //System.out.println("json object: " + jsonObject);
 
         if (jsonObject.has("full_text")) {
             tweet.body = jsonObject.getString("full_text");
@@ -87,6 +91,7 @@ public class Tweet {
 
         return relativeDate;
     }
+
 
     public String getBody() {
         return body;
