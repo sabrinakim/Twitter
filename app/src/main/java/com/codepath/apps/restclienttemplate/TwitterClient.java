@@ -79,7 +79,6 @@ public class TwitterClient extends OAuthBaseClient {
 
 	public void getLiked(JsonHttpResponseHandler jsonHttpResponseHandler) {
 		String apiUrl = getApiUrl("favorites/list.json");
-		//RequestParams params = new RequestParams();
 		client.get(apiUrl, jsonHttpResponseHandler);
 	}
 

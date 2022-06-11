@@ -66,7 +66,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
     public void clear() {
         tweets.clear();
-        notifyDataSetChanged();;
+        notifyDataSetChanged();
     }
 
     public void addAll(List<Tweet> newTweets) {
@@ -88,6 +88,8 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         TextView tvTimestamp;
         TextView actualName;
         ToggleButton tbLike;
+        ToggleButton replyButton;
+
 
         @Override
         public void onClick(View view) {
@@ -118,6 +120,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
             tbLike = itemView.findViewById(R.id.tbLike);
             actualName = itemView.findViewById(R.id.tvActualName);
+            replyButton = itemView.findViewById(R.id.tbReply);
 
             itemView.setOnClickListener(this);
         }
@@ -178,6 +181,15 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                         });
 
                     }
+                }
+            });
+
+            replyButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(context, ReplyActivity.class);
+                    i.putExtra(Tweet.class.getSimpleName(), Parcels.wrap(tweet));
+                    context.startActivity(i);
                 }
             });
 

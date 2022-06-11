@@ -63,7 +63,8 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets.setLayoutManager(new LinearLayoutManager(this));
         rvTweets.setAdapter(adapter);
 
-        populateHomeTimeline();
+        // this is async
+        setTweetAttributeAndPopulateTimeline();
 
         Button logoutButton = findViewById(R.id.button);
         logoutButton.setOnClickListener(new View.OnClickListener() {
@@ -85,16 +86,16 @@ public class TimelineActivity extends AppCompatActivity {
         swipeContainer = findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onRefresh() {
+            public void onRefresh() { // this is messed up really bad
                 fetchTimelineAsync(); // updates "tweets"
-                setUpTweets();
             }
         });
 
     }
 
-    public void fetchTimelineAsync() {
-        client.getHomeTimeline(new JsonHttpResponseHandler() {
+    public void fetchTimelineAsync() { // updating "tweets" into a refreshed list of tweets
+        // get new tweets, set up tweets, then populate home timeline.
+        client.getHomeTimeline(new JsonHttpResponseHandler() { // getting new tweets.
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
                 adapter.clear(); // clears all the tweets
@@ -103,8 +104,36 @@ public class TimelineActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     Log.e(TAG, "Json exception", e);
                 }
-                adapter.addAll(tweets);
-                setUpTweets();
+                // got new tweets, now we must set it up & populate
+                client.getLiked(new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Headers headers, JSON json) {
+                        Log.i(TAG, "onSuccess liked tweets" + json.toString());
+                        JSONArray jsonArray = json.jsonArray; // we have a list of liked tweet objects now
+                        // go through "tweets" and toggle the like button for each one
+                        //System.out.println("tweets: " + tweets);
+                        for (Tweet tweet : tweets) {
+                            //System.out.println("tweet id string: " + tweet.idString);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                try {
+                                    //System.out.println("id string " + jsonArray.getJSONObject(i).getString("id_str"));
+                                    if (Objects.equals(tweet.idString, jsonArray.getJSONObject(i).getString("id_str"))) {
+                                        System.out.println("hello ");
+                                        // set tweet attribute
+                                        tweet.isLiked = true;
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        adapter.notifyDataSetChanged(); // populating
+                    }
+                    @Override
+                    public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                        Log.e(TAG, "onFailure!" + response, throwable);
+                    }
+                });
                 swipeContainer.setRefreshing(false); // signals that refresh is done
             }
 
@@ -150,34 +179,35 @@ public class TimelineActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void populateHomeTimeline() {
-        // twitter api method
-        client.getHomeTimeline(new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Headers headers, JSON json) {
-                Log.i(TAG, "onSuccess" + json.toString());
-                // json array of tweets
-                JSONArray jsonArray = json.jsonArray; // each tweet is a jsonObject
-                System.out.println("json array: " + jsonArray);
-                try {
-                    tweets.addAll(Tweet.fromJsonArray(jsonArray)); // returns the full list of tweets from the api call
-                    setUpTweets();
-                    // this is what triggers the functions in the adapter?
-                    adapter.notifyDataSetChanged();
-                } catch (JSONException e) {
-                    Log.e(TAG, "Json exception", e);
+//    private void populateHomeTimeline() { // this method is async
+//        // twitter api method
+//        client.getHomeTimeline(new JsonHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int statusCode, Headers headers, JSON json) {
+//                Log.i(TAG, "onSuccess" + json.toString());
+//                // json array of tweets
+//                JSONArray jsonArray = json.jsonArray; // each tweet is a jsonObject
+//                //System.out.println("json array: " + jsonArray);
+//                try {
+//                    tweets.addAll(Tweet.fromJsonArray(jsonArray)); // returns the full list of tweets from the api call
+//                    setUpTweets();
+//                    // this is what triggers the functions in the adapter?
+//                    adapter.notifyDataSetChanged();
+//                } catch (JSONException e) {
+//                    Log.e(TAG, "Json exception", e);
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+//                Log.e(TAG, "onFailure!" + response, throwable);
+//            }
+//        });
+//    }
 
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                Log.e(TAG, "onFailure!" + response, throwable);
-            }
-        });
-    }
-
-    private void setTweetAttribute() { // this function is async
+    private void setTweetAttributeAndPopulateTimeline() {
+        // .getLiked() function is async; handler happens afterwards.
         client.getLiked(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
@@ -200,7 +230,29 @@ public class TimelineActivity extends AppCompatActivity {
                         }
                     }
                 }
-                adapter.notifyDataSetChanged();
+                // home timeline is fetched and binded to app AFTER we set liked attribute.
+                client.getHomeTimeline(new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Headers headers, JSON json) {
+                        Log.i(TAG, "onSuccess" + json.toString());
+                        // json array of tweets
+                        JSONArray jsonArray = json.jsonArray; // each tweet is a jsonObject
+                        //System.out.println("json array: " + jsonArray);
+                        try {
+                            tweets.addAll(Tweet.fromJsonArray(jsonArray)); // returns the full list of tweets from the api call
+                            // this is what triggers the functions in the adapter?
+                            adapter.notifyDataSetChanged(); // here, the tweets get liked or unliked
+                        } catch (JSONException e) {
+                            Log.e(TAG, "Json exception", e);
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                        Log.e(TAG, "onFailure!" + response, throwable);
+                    }
+                });
             }
 
             @Override
@@ -208,9 +260,5 @@ public class TimelineActivity extends AppCompatActivity {
                 Log.e(TAG, "onFailure!" + response, throwable);
             }
         });
-    }
-
-    private void setUpTweets() {
-        setTweetAttribute();
     }
 }

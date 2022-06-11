@@ -94,6 +94,19 @@
         app:layout_constraintTop_toBottomOf="@+id/ivTweetImage"
         tools:ignore="TouchTargetSizeCheck" />
 
+    <ToggleButton
+        android:id="@+id/tbReply"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/toggle_reply_selector"
+        android:textOff=""
+        android:textOn=""
+        app:layout_constraintStart_toEndOf="@+id/tbRetweet"
+        app:layout_constraintTop_toBottomOf="@+id/ivTweetImage"
+        tools:ignore="TouchTargetSizeCheck" />
+
     <TextView
         android:id="@+id/tvActualName"
         android:layout_width="0dp"

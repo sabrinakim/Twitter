@@ -26,6 +26,7 @@ public class Tweet {
     public String relativeTimestamp;
     public long id;
     public String idString;
+    // default status is false
     public boolean isLiked = false;
 
     private static final int SECOND_MILLIS = 1000;
@@ -35,8 +36,6 @@ public class Tweet {
 
 
     static final String TWITTERFORMAT = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
-
-   // SharedPreferences shared = this.getSharedPreferences()
 
     // empty constructor needed by Parceler library
     public Tweet() {}
@@ -83,21 +82,6 @@ public class Tweet {
 
     // getRelativeTimeAgo("Mon Apr 01 21:16:23 +0000 2014");
     public String getRelativeTimeAgo(String rawJsonDate) {
-//        //String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
-//        SimpleDateFormat sf = new SimpleDateFormat(TWITTERFORMAT, Locale.ENGLISH);
-//        sf.setLenient(true);
-//
-//        String relativeDate = "";
-//        try {
-//            long dateMillis = sf.parse(rawJsonDate).getTime();
-//            relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
-//                    System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return relativeDate;
-
         String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
         SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
         sf.setLenient(true);
