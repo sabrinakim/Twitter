@@ -165,6 +165,17 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
                     } else {
                         // The toggle is disabled --> delete like here
+                        client.dislikeTweet(tweet, new JsonHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                                System.out.println("tweet successfully disliked");
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                                System.out.println("tweet did not dislike :((((((((((");
+                            }
+                        });
 
                     }
                 }
