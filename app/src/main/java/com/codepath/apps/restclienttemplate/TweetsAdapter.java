@@ -78,6 +78,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
 
     // define a viewholder class
+    // one tweet maps to one viewholder
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         ImageView ivProfileImage;
@@ -124,7 +125,11 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
         // binding tweet to the tweet layout
         public void bind(Tweet tweet) {
+            // like the tweets
+            tbLike.setChecked(tweet.isLiked);
+
             tvBody.setText(tweet.body);
+            System.out.println(tweet.body);
             tvScreenName.setText(tweet.getUser().name);
             Glide.with(context).load(tweet.user.profileImageUrl).into(ivProfileImage);
             if (tweet.tweetImageURL != null) {
@@ -136,22 +141,15 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvTimestamp.setText(tweet.relativeTimestamp);
             actualName.setText("@" + tweet.getUser().screenName);
 
-            SharedPreferences sharedPreferences = context.getSharedPreferences("save" + tweet.idString, Context.MODE_PRIVATE); // key value pair.
-            // if there is no key "value", switch will be off (default activity)
-            tbLike.setChecked(sharedPreferences.getBoolean("toggleOn" + tweet.idString, false));
+            // check if tweet is liked
+            TwitterClient client = new TwitterClient(context);
 
             tbLike.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     if (b) {
                         // The toggle is enabled
-                        //System.out.println("IN HERE1");
-                        // getting editor so that we can change the shared preference state.
-                        SharedPreferences.Editor editor = context.getSharedPreferences("save" + tweet.idString, Context.MODE_PRIVATE).edit();
-                        editor.putBoolean("toggleOn" + tweet.idString, true); // saving new preference state
-                        editor.apply();
 
-                        TwitterClient client = new TwitterClient(context);
                         client.likeTweet(tweet, new JsonHttpResponseHandler() {
                             @Override
                             public void onSuccess(int statusCode, Headers headers, JSON json) {
@@ -166,12 +164,8 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                         //tbLike.setChecked(true);
 
                     } else {
-                        // The toggle is disabled
-                        SharedPreferences.Editor editor = context.getSharedPreferences("save" + tweet.idString, Context.MODE_PRIVATE).edit();
-                        //System.out.println("IN HERE2");
-                        editor.putBoolean("toggleOn" + tweet.idString, false);
-                        editor.apply();
-//                        tbLike.setChecked(true);
+                        // The toggle is disabled --> delete like here
+
                     }
                 }
             });

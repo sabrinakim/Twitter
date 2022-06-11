@@ -1,5 +1,6 @@
 package com.codepath.apps.restclienttemplate;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,12 +22,16 @@ import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.parceler.Parcels;
 
+import java.io.IOException;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import okhttp3.Call;
 import okhttp3.Headers;
 
 public class TimelineActivity extends AppCompatActivity {
@@ -39,7 +44,6 @@ public class TimelineActivity extends AppCompatActivity {
     RecyclerView rvTweets;
     List<Tweet> tweets;
     TweetsAdapter adapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +86,8 @@ public class TimelineActivity extends AppCompatActivity {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                fetchTimelineAsync();
+                fetchTimelineAsync(); // updates "tweets"
+                setUpTweets();
             }
         });
 
@@ -99,6 +104,7 @@ public class TimelineActivity extends AppCompatActivity {
                     Log.e(TAG, "Json exception", e);
                 }
                 adapter.addAll(tweets);
+                setUpTweets();
                 swipeContainer.setRefreshing(false); // signals that refresh is done
             }
 
@@ -155,6 +161,7 @@ public class TimelineActivity extends AppCompatActivity {
                 System.out.println("json array: " + jsonArray);
                 try {
                     tweets.addAll(Tweet.fromJsonArray(jsonArray)); // returns the full list of tweets from the api call
+                    setUpTweets();
                     // this is what triggers the functions in the adapter?
                     adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
@@ -168,5 +175,42 @@ public class TimelineActivity extends AppCompatActivity {
                 Log.e(TAG, "onFailure!" + response, throwable);
             }
         });
+    }
+
+    private void setTweetAttribute() { // this function is async
+        client.getLiked(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                Log.i(TAG, "onSuccess liked tweets" + json.toString());
+                JSONArray jsonArray = json.jsonArray; // we have a list of liked tweet objects now
+                // go through "tweets" and toggle the like button for each one
+                System.out.println("tweets: " + tweets);
+                for (Tweet tweet : tweets) {
+                    System.out.println("tweet id string: " + tweet.idString);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        try {
+                            //System.out.println("id string " + jsonArray.getJSONObject(i).getString("id_str"));
+                            if (Objects.equals(tweet.idString, jsonArray.getJSONObject(i).getString("id_str"))) {
+                                System.out.println("hello ");
+                                // set tweet attribute
+                                tweet.isLiked = true;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                Log.e(TAG, "onFailure!" + response, throwable);
+            }
+        });
+    }
+
+    private void setUpTweets() {
+        setTweetAttribute();
     }
 }

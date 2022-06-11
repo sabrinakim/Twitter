@@ -11,6 +11,8 @@ import com.github.scribejava.apis.FlickrApi;
 import com.github.scribejava.apis.TwitterApi;
 import com.github.scribejava.core.builder.api.BaseApi;
 
+import org.json.JSONArray;
+
 /*
  * 
  * This is the object responsible for communicating with a REST API. 
@@ -73,6 +75,12 @@ public class TwitterClient extends OAuthBaseClient {
 		RequestParams params = new RequestParams();
 		params.put("id", tweet.idString);
 		client.post(apiUrl, params, "", handler);
+	}
+
+	public void getLiked(JsonHttpResponseHandler jsonHttpResponseHandler) {
+		String apiUrl = getApiUrl("favorites/list.json");
+		//RequestParams params = new RequestParams();
+		client.get(apiUrl, jsonHttpResponseHandler);
 	}
 
 	/* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint

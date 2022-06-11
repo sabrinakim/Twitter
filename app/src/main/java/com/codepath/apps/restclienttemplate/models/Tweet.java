@@ -26,6 +26,7 @@ public class Tweet {
     public String relativeTimestamp;
     public long id;
     public String idString;
+    public boolean isLiked = false;
 
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
