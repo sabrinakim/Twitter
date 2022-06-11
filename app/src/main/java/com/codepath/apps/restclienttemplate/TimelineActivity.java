@@ -3,6 +3,7 @@ package com.codepath.apps.restclienttemplate;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.codepath.apps.restclienttemplate.models.ComposeDialogFragment;
 import com.codepath.apps.restclienttemplate.models.EndlessRecyclerViewScrollListener;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
@@ -35,7 +37,7 @@ import java.util.Objects;
 import okhttp3.Call;
 import okhttp3.Headers;
 
-public class TimelineActivity extends AppCompatActivity {
+public class TimelineActivity extends AppCompatActivity implements ComposeDialogFragment.ComposeDialogListener {
 
     public static final String TAG = "TimelineActivity";
     private final int REQUEST_CODE = 20;
@@ -109,9 +111,19 @@ public class TimelineActivity extends AppCompatActivity {
 
     }
 
+    private void showEditDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        ComposeDialogFragment composeDialogFragment = ComposeDialogFragment.newInstance();
+        composeDialogFragment.show(fm, "fragment_edit_name");
+    }
+
     private void loadNextDataFromApi(int page) {
         // page = 1 at the beginning
-        System.out.println("page = " + page);
+        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
+        //  --> Deserialize and construct new model objects from the API response
+        //  --> Append the new data objects to the existing set of items inside the array of items
+        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
+        //System.out.println("page = " + page);
         // Send an API request to retrieve appropriate paginated data
         setMinId();
         client.getMoreTweets(minId - 1, new JsonHttpResponseHandler() {
@@ -130,14 +142,9 @@ public class TimelineActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-
+                Log.e(TAG, "getMoreTweets failed");
             }
         });
-        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
-        //  --> Deserialize and construct new model objects from the API response
-        //  --> Append the new data objects to the existing set of items inside the array of items
-        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
-
     }
 
     private void setMinId() {
@@ -210,29 +217,31 @@ public class TimelineActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.compose) {
             // compose icon has been selected
             Toast.makeText(this, "Compose!", Toast.LENGTH_SHORT).show();
-            // navigate to the compose activity
-            Intent intent = new Intent(this, ComposeActivity.class);
-            startActivityForResult(intent, REQUEST_CODE); // deprecated?
+            showEditDialog();
+//            // navigate to the compose activity
+//            Intent intent = new Intent(this, ComposeActivity.class);
+//            startActivityForResult(intent, REQUEST_CODE); // deprecated?
+
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        // data is the data that results from going to the next activity
-        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-            // Get data from the intent (tweet)
-            Tweet tweet = Parcels.unwrap(data.getParcelableExtra("tweet"));
-            // Update the RV with the tweet
-            // modify data source of tweets
-            tweets.add(0, tweet);
-            // update the adapter
-            adapter.notifyItemInserted(0);
-            rvTweets.smoothScrollToPosition(0);
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        // data is the data that results from going to the next activity
+//        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+//            // Get data from the intent (tweet)
+//            Tweet tweet = Parcels.unwrap(data.getParcelableExtra("tweet"));
+//            // Update the RV with the tweet
+//            // modify data source of tweets
+//            tweets.add(0, tweet);
+//            // update the adapter
+//            adapter.notifyItemInserted(0);
+//            rvTweets.smoothScrollToPosition(0);
+//        }
+//        super.onActivityResult(requestCode, resultCode, data);
+//    }
 
 //    private void populateHomeTimeline() { // this method is async
 //        // twitter api method
@@ -315,5 +324,12 @@ public class TimelineActivity extends AppCompatActivity {
                 Log.e(TAG, "onFailure!" + response, throwable);
             }
         });
+    }
+
+    @Override
+    public void onFinishEditDialog(Tweet tweet) {
+        tweets.add(0, tweet);
+        adapter.notifyItemInserted(0);
+        rvTweets.smoothScrollToPosition(0);
     }
 }
