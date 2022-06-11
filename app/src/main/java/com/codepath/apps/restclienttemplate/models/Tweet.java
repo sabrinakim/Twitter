@@ -54,7 +54,7 @@ public class Tweet {
 
         // fromJson takes a JSONObect and converts to a User object.
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
-        tweet.id = jsonObject.getInt("id");
+        tweet.id = jsonObject.getLong("id");
         tweet.idString = jsonObject.getString("id_str");
 
         // each tweet has "entities" section
@@ -75,7 +75,8 @@ public class Tweet {
     public static List<Tweet> fromJsonArray(JSONArray jsonArray) throws JSONException {
         List<Tweet> tweets = new ArrayList<>();
         for (int i = 0; i < jsonArray.length(); i++) {
-            tweets.add(fromJson(jsonArray.getJSONObject(i)));
+            Tweet tweet = fromJson(jsonArray.getJSONObject(i));
+            tweets.add(tweet);
         }
         return tweets;
     }
@@ -113,7 +114,6 @@ public class Tweet {
 
         return "";
     }
-
 
     public String getBody() {
         return body;

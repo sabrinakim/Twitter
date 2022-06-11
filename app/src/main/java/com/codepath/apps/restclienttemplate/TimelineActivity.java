@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.codepath.apps.restclienttemplate.models.EndlessRecyclerViewScrollListener;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
@@ -38,7 +39,9 @@ public class TimelineActivity extends AppCompatActivity {
 
     public static final String TAG = "TimelineActivity";
     private final int REQUEST_CODE = 20;
+    private long minId = Long.MAX_VALUE;
     private SwipeRefreshLayout swipeContainer;
+    private EndlessRecyclerViewScrollListener scrollListener;
 
     TwitterClient client;
     RecyclerView rvTweets;
@@ -60,8 +63,21 @@ public class TimelineActivity extends AppCompatActivity {
         // recycler view setup: layout manager and the adapter
             // sets the layout of the contents --> a list of repeating views in the recycler view.
             // recyclerView will not function without it.
-        rvTweets.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        rvTweets.setLayoutManager(linearLayoutManager);
         rvTweets.setAdapter(adapter);
+
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                System.out.println("IN HERE");
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to the bottom of the list
+                loadNextDataFromApi(page);
+            }
+        };
+        // Adds the scroll listener to RecyclerView
+        rvTweets.addOnScrollListener(scrollListener);
 
         // this is async
         setTweetAttributeAndPopulateTimeline();
@@ -91,6 +107,45 @@ public class TimelineActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void loadNextDataFromApi(int page) {
+        // page = 1 at the beginning
+        System.out.println("page = " + page);
+        // Send an API request to retrieve appropriate paginated data
+        setMinId();
+        client.getMoreTweets(minId - 1, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                try {
+                    List<Tweet> olderTweets = Tweet.fromJsonArray(json.jsonArray);
+                    tweets.addAll(olderTweets);
+                    // `notifyItemRangeInserted()`: Notify any registered observers that the itemCount
+                    // items starting at position positionStart have changed
+                    adapter.notifyItemRangeInserted(25 * page, 25);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+
+            }
+        });
+        //  --> Send the request including an offset value (i.e `page`) as a query parameter.
+        //  --> Deserialize and construct new model objects from the API response
+        //  --> Append the new data objects to the existing set of items inside the array of items
+        //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
+
+    }
+
+    private void setMinId() {
+        for (Tweet tweet : tweets) {
+            if (tweet.id < minId) {
+                minId = tweet.id;
+            }
+        }
     }
 
     public void fetchTimelineAsync() { // updating "tweets" into a refreshed list of tweets
