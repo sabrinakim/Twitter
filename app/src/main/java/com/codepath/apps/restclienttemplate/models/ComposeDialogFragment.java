@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +43,7 @@ public class ComposeDialogFragment extends DialogFragment {
     private EditText etCompose;
     private TwitterClient client;
     private List<Tweet> tweets;
+    private ProgressBar pbLoading;
 
     public interface ComposeDialogListener {
         void onFinishEditDialog(Tweet tweet);
@@ -72,11 +74,15 @@ public class ComposeDialogFragment extends DialogFragment {
         //mEditText = (EditText) view.findViewById(R.id.txt_your_name);
         btnTweet = view.findViewById(R.id.btnTweet);
         etCompose = view.findViewById(R.id.etCompose);
+        pbLoading = (ProgressBar) view.findViewById(R.id.pbLoading);
 
         // set click listener on button
         btnTweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                ProgressBar pb = (ProgressBar) view.findViewById(R.id.pbLoading);
+                pbLoading.setVisibility(ProgressBar.VISIBLE);
+
                 String tweetContent = etCompose.getText().toString();
                 if (tweetContent.isEmpty()) {
                     Toast.makeText(getContext(), "Sorry, your tweet cannot be empty", Toast.LENGTH_LONG).show();
@@ -92,6 +98,7 @@ public class ComposeDialogFragment extends DialogFragment {
                 client.publishTweet(tweetContent, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Headers headers, JSON json) {
+                        pbLoading.setVisibility(ProgressBar.INVISIBLE);
                         Log.i(TAG,"onSuccess to publish tweet");
                         try {
                             Tweet tweet = Tweet.fromJson(json.jsonObject);
