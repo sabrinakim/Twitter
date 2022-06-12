@@ -4,11 +4,6 @@ import android.content.SharedPreferences;
 import android.text.format.DateUtils;
 import android.util.Log;
 
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.Ignore;
-import androidx.room.PrimaryKey;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,35 +16,17 @@ import java.util.List;
 import java.util.Locale;
 
 @Parcel
-@Entity
 public class Tweet {
-    @ColumnInfo
+
     public String body;
-
-    @ColumnInfo
     public String createdAt;
-
-    @Ignore
+    //public String imageURL;
     public User user;
-
-    @ColumnInfo
     public String tweetImageURL;
-
-    @ColumnInfo
     public String relativeTimestamp;
-
-    @ColumnInfo
-    public long userId;
-
-    @ColumnInfo
-    @PrimaryKey
     public long id;
-
-    @ColumnInfo
     public String idString;
-
     // default status is false
-    @ColumnInfo
     public boolean isLiked = false;
 
     private static final int SECOND_MILLIS = 1000;
@@ -91,7 +68,6 @@ public class Tweet {
         }
 
         tweet.relativeTimestamp = tweet.getRelativeTimeAgo(tweet.createdAt);
-        tweet.userId = tweet.user.id;
 
         return tweet;
     }
