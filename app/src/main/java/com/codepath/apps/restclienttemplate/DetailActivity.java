@@ -20,12 +20,11 @@ public class DetailActivity extends AppCompatActivity {
     ImageView ivMediaDetail;
     TextView tvUsernameDetail;
     TextView tvTweetDetail;
-    ToggleButton tbLike;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+        //setContentView(R.layout.activity_detail);
 
         // unwrap the tweet passed in via intent
         tweet = Parcels.unwrap(getIntent().getParcelableExtra(Tweet.class.getSimpleName()));
@@ -41,7 +40,6 @@ public class DetailActivity extends AppCompatActivity {
 
         tvUsernameDetail.setText(tweet.getUser().name);
         tvTweetDetail.setText(tweet.body);
-
 
     }
 }
